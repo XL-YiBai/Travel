@@ -20,10 +20,11 @@
           </div>
         </div>
       </div>
-      <!-- 遍历对象时，第二项为键名key，此时key为ABCDE..Z -->
+      <!-- 遍历对象时，第二项为键名key，此时key为ABCDE..Z，给每个字母导航栏加ref标识 -->
       <div class="area"
         v-for="(item, key) of cities"
         :key="key"
+        :ref="key"
       >
         <div class="title border-topbottom">{{key}}</div>
           <div class="item-list">
@@ -46,13 +47,25 @@ export default {
   name: 'CityList',
   props: {
     hotCities: Array,
-    cities: Object
+    cities: Object,
+    letter: String
   },
   mounted () {
     this.scroll = new Bscroll(this.$refs.wrapper)
   },
   updated () {
     this.scroll.refresh()
+  },
+  // 使用监视属性watch监听字母letter的变化
+  watch: {
+    letter () {
+      if (this.letter) {
+        // 因为导航栏的ref标识是循环加上的，所以直接获取到的是一个数组，在后面再加一个[0]才取到dom元素
+        const element = this.$refs[this.letter][0]
+        // 使用better-scroll插件自带的接口scrollToElement，可以跳转到该element元素的位置，这样就实现点侧边栏切换城市展示的效果了
+        this.scroll.scrollToElement(element)
+      }
+    }
   }
 }
 </script>
