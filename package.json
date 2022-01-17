@@ -13,7 +13,6 @@
   "dependencies": {
     "axios": "^0.24.0",
     "better-scroll": "^2.4.2",
-    "fastclick": "^1.0.6",
     "style-loader": "^3.3.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
