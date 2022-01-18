@@ -12,16 +12,20 @@
         </div>
       </div>
     </div>
-    <common-gallary
-      :imgs="bannerImgs"
-      v-show="showGallary"
-      @close="handleGallaryClose"
-    ></common-gallary>
+    <!-- common-gallary以插槽的形式插入fade-animation组件，而该组件包了一个transition做动画，相当于就包裹在common-gallary上了 -->
+    <fade-animation>
+      <common-gallary
+        :imgs="bannerImgs"
+        v-show="showGallary"
+        @close="handleGallaryClose"
+      ></common-gallary>
+    </fade-animation>
   </div>
 </template>
 
 <script>
 import CommonGallary from 'common/gallary/Gallary'
+import FadeAnimation from 'common/fade/FadeAnimation.vue'
 export default {
   name: 'DetailBanner',
   props: {
@@ -42,7 +46,7 @@ export default {
       this.showGallary = false
     }
   },
-  components: {CommonGallary}
+  components: {CommonGallary, FadeAnimation}
 }
 </script>
 

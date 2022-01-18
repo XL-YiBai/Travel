@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import DetailBanner from './components/Banner.vue'
+import DetailBanner from './components/Banner'
 import DetailHeader from './components/Header.vue'
 import DetailList from './components/List.vue'
 import axios from 'axios'
