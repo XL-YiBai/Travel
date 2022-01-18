@@ -34,6 +34,7 @@ export default {
   },
   methods: {
     handleScroll () {
+      console.log('scroll')
       // 获取滚动距离
       const top = document.documentElement.scrollTop
       if (top > 60) {
@@ -51,6 +52,10 @@ export default {
   },
   activated () {
     window.addEventListener('scroll', this.handleScroll)
+  },
+  deactivated () {
+    // 该组件不显示时，解绑全局事件，避免对其他组件造成影响
+    window.removeEventListener('scroll', this.handleScroll)
   }
 }
 </script>
