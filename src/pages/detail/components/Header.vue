@@ -34,7 +34,6 @@ export default {
   },
   methods: {
     handleScroll () {
-      console.log('scroll')
       // 获取滚动距离
       const top = document.documentElement.scrollTop
       if (top > 60) {
@@ -76,6 +75,7 @@ export default {
       color: #fff
       font-size: .4rem
   .header-fixed
+    z-index: 2
     position: fixed
     top: 0
     left: 0
