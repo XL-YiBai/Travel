@@ -1,12 +1,14 @@
 <template>
   <ul class="list">
-    <li class="item"
+    <!-- elem指的是这个li标签，elems是setup中定义的，就是循环每一个li标签都存入elems数组中 -->
+    <li
+      class="item"
       v-for="item of letters"
       :key="item"
-      :ref="item"
-      @touchstart.prevent="handleTouchStart"
+      :ref="elem => elems[item] = elem"
+      @touchstart="handleTouchStart"
       @touchmove="handleTouchMove"
-      @touchend="handleTouchMove"
+      @touchend="handleTouchEnd"
       @click="handleLetterClick"
     >
       {{item}}
@@ -15,59 +17,65 @@
 </template>
 
 <script>
+import { computed, onUpdated, ref } from 'vue'
 export default {
   name: 'CityAlphabet',
   props: {
     cities: Object
   },
-  computed: {
-    letters () { // 将所有首字母存储到letters数组中 ['A', 'B', ... 'Z']
+  setup(props, context) {
+    let touchStatus = false
+    let startY = 0
+    let timer = null
+    const elems = ref([])
+
+    const letters = computed(() => {  // 将所有首字母存储到letters数组中 ['A', 'B', ... 'Z']
       const letters = []
-      for (let i in this.cities) {
+      for (let i in props.cities) {
         letters.push(i)
       }
       return letters
+    })
+
+    onUpdated(() => {
+      // offsetTop它返回当前元素相对于其offsetParent元素的顶部内边距的距离，此时为字母A顶部到顶部蓝色下沿的距离
+      startY = elems.value['A'].offsetTop
+    })
+
+    function handleLetterClick(e) {
+      context.emit('change', e.target.innerText)
     }
-  },
-  data () {
-    return {
-      touchStatus: false,
-      startY: 0,
-      timer: null
+
+    function handleTouchStart () {
+      touchStatus = true
     }
-  },
-  // 因为mounted挂载时，还没有获取到ajax传回的字母数组，所以一开始为空，获取到之后当前组件重新渲染，所以把这个逻辑写在updated钩子里
-  updated () {
-    // offsetTop它返回当前元素相对于其offsetParent元素的顶部内边距的距离，此时为字母A顶部到顶部蓝色下沿的距离
-    this.startY = this.$refs['A'].offsetTop
-  },
-  methods: {
-    handleLetterClick (e) {
-      this.$emit('change', e.target.innerText)
-    },
-    handleTouchStart () {
-      this.touchStatus = true
-    },
-    handleTouchMove (e) {
-      if (this.touchStatus) {
+
+    function handleTouchEnd () {
+      touchStatus = false
+    }
+
+    function handleTouchMove (e) {
+      if (touchStatus) {
         // 通过节流优化代码，减少连续滑动时的计算频率，提高性能
-        if (!this.timer) {
-          this.timer = setTimeout(() => {
-            this.timer = null
+        if (!timer) {
+          timer = setTimeout(() => {
+            timer = null
             // e.touches[0].clientY手指当前移动的位置距离整个屏幕顶部的距离，只要减去顶部蓝色高度就得到到蓝色下沿距离
             const touchY = (e.touches[0].clientY) - 79
             // 求出滑动过程中，当前字母的下标，每个字母的高度为20px
-            const index = Math.floor((touchY - this.startY) / 20)
+            const index = Math.floor((touchY - startY) / 20)
             // 滑动过程中坐标为0到25时，跳转到对应字母的城市区域
-            if (index >= 0 && index < this.letters.length) {
-              this.$emit('change', this.letters[index])
+            if (index >= 0 && index < letters.value.length) {
+              context.emit('change', letters.value[index])
             }
           }, 16)
         }
       }
-    },
-    handleTouchEnd () {
-      this.touchStatus = false
+    }
+    
+    return {
+      elems, letters, handleLetterClick, handleTouchStart,
+      handleTouchEnd, handleTouchMove
     }
   }
 }
