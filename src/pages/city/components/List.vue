@@ -25,7 +25,7 @@
       <div class="area"
         v-for="(item, key) of cities"
         :key="key"
-        :ref="key"
+        :ref="elem => elems[key] = elem"
       >
         <div class="title border-topbottom">{{key}}</div>
           <div class="item-list">
@@ -45,7 +45,9 @@
 
 <script>
 import Bscroll from 'better-scroll'
-import { mapState, mapMutations } from 'vuex'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { watch, onMounted, ref, onUpdated } from 'vue'
 export default {
   name: 'CityList',
   props: {
@@ -53,38 +55,38 @@ export default {
     cities: Object,
     letter: String
   },
-  computed: {
-    // 把vuex中city属性映射到当前组件的currentCity属性
-    ...mapState({
-      currentCity: 'city'
-    })
-  },
-  methods: {
-    handleCityClick (city) {
-      this.changeCity(city)
-      this.$router.push('/')
-    },
-    // 把vuex中mutations的方法changeCity映射到当前组件的方法changeCity
-    ...mapMutations(['changeCity'])
-  },
-  // 使用监视属性watch监听字母letter的变化
-  watch: {
-    letter () {
-      if (this.letter) {
-        // 因为导航栏的ref标识是循环加上的，所以直接获取到的是一个数组，在后面再加一个[0]才取到dom元素
-        const element = this.$refs[this.letter]
-        // 使用better-scroll插件自带的接口scrollToElement，可以跳转到该element元素的位置，这样就实现点侧边栏切换城市展示的效果了
-        this.scroll.scrollToElement(element)
-      }
+  setup(props) {
+    const store = useStore()
+    const router = useRouter()
+    const currentCity = store.state.city
+    const elems = ref({})
+    const wrapper = ref(null)
+    let scroll = null
+
+    function handleCityClick(city) {
+      store.commit('changeCity', city)
+      router.push('/')
     }
+
+    watch(() => props.letter, (newLetter, prevLetter) => {
+      if (newLetter && scroll) {
+        // 因为导航栏的ref标识是循环加上的，所以直接获取到的是一个数组，在后面再加一个[0]才取到dom元素
+        const element = elems.value[newLetter]
+        // 使用better-scroll插件自带的接口scrollToElement，可以跳转到该element元素的位置，这样就实现点侧边栏切换城市展示的效果了
+        scroll.scrollToElement(element)
+      }
+    })
+    onMounted(() => {
+      // {click: true}解决移动端点击事件无法触发的问题
+      scroll = new Bscroll(wrapper.value, {click: true})
+    })
+
+    onUpdated(() => {
+      scroll.refresh()
+    })
+
+    return { elems, wrapper, currentCity, handleCityClick }
   },
-  mounted () {
-    // {click: true}解决移动端点击事件无法触发的问题
-    this.scroll = new Bscroll(this.$refs.wrapper, {click: true})
-  },
-  updated () {
-    this.scroll.refresh()
-  }
 }
 </script>
 

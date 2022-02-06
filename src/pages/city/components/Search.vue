@@ -27,65 +27,67 @@
 </template>
 
 <script>
+import { computed, onMounted, onUpdated, ref, watch } from '@vue/runtime-core'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import Bscroll from 'better-scroll'
-import { mapMutations } from 'vuex'
 export default {
   name: 'CitySearch',
   props: {
     cities: Object
   },
-  data () {
-    return {
-      keyword: '',
-      list: [],
-      timer: null
-    }
-  },
-  computed: {
-    hasNoData () {
-      return !this.list.length
-    }
-  },
-  watch: {
-    // 输入框关键字变化时，匹配cities数据中城市的拼写和中文名
-    keyword () {
+  setup(props) {
+    const keyword = ref('')
+    const list = ref([])
+    const search = ref(null)
+    let timer = null
+    const store = useStore()
+    const router = useRouter()
+    let scroll = null
+    const hasNoData = computed(() => {
+      return !list.length
+    })
+
+    watch(keyword, (newKeyword, oldKeyword) => {
       // 通过防抖优化代码
-      if (this.timer) {
-        clearTimeout(this.timer)
+      if (timer) {
+        clearTimeout(timer)
+        timer = null
       }
       // 如果输入框清空，则把匹配数组list置为空
-      if (!this.keyword) {
-        this.list = []
+      if (!newKeyword) {
+        list.value = []
         return
       }
-      this.timer = setTimeout(() => {
+      timer = setTimeout(() => {
         const result = []
-        for (let i in this.cities) {
-          this.cities[i].forEach((value) => {
-            if (value.spell.indexOf(this.keyword) > -1 ||
-            value.name.indexOf(this.keyword) > -1) {
+        for (let i in props.cities) {
+          props.cities[i].forEach((value) => {
+            if (value.spell.indexOf(newKeyword) > -1 ||
+            value.name.indexOf(newKeyword) > -1) {
               result.push(value)
             }
           })
         }
-        this.list = result
+        list.value = result
       }, 100)
+    })
+
+    function handleCityClick (city) {
+      store.commit('changeCity', city)
+      router.push('/')
     }
+
+    onMounted(() => {
+      scroll = new Bscroll(search.value, {click: true})
+    })
+
+    onUpdated(() => {
+      scroll.refresh()
+    })
+
+    return { keyword, list, search, hasNoData, handleCityClick }
   },
-  methods: {
-    handleCityClick (city) {
-      this.changeCity(city)
-      this.$router.push('/')
-    },
-    // 把vuex中mutations的方法changeCity映射到当前组件的方法changeCity
-    ...mapMutations(['changeCity'])
-  },
-  mounted () {
-    this.scroll = new Bscroll(this.$refs.search, {click: true})
-  },
-  updated () {
-    this.scroll.refresh()
-  }
 }
 </script>
 
