@@ -26,27 +26,26 @@
 <script>
 import CommonGallary from 'common/gallary/Gallary'
 import FadeAnimation from 'common/fade/FadeAnimation.vue'
+import { ref } from '@vue/reactivity'
 export default {
   name: 'DetailBanner',
+  components: {CommonGallary, FadeAnimation},
   props: {
     sightName: String,
     bannerImg: String,
     bannerImgs: Array
   },
-  data () {
-    return {
-      showGallary: false
+  setup() {
+    const showGallary = ref(false)
+    function handleBannerClick () {
+      showGallary.value = true
     }
-  },
-  methods: {
-    handleBannerClick () {
-      this.showGallary = true
-    },
-    handleGallaryClose () {
-      this.showGallary = false
+    function handleGallaryClose () {
+      showGallary.value = false
     }
+
+    return { showGallary, handleBannerClick, handleGallaryClose }
   },
-  components: {CommonGallary, FadeAnimation}
 }
 </script>
 

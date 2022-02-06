@@ -22,40 +22,41 @@
 </template>
 
 <script>
+import { reactive, ref } from '@vue/reactivity'
+import { onMounted, onUnmounted } from '@vue/runtime-core'
 export default {
   name: 'DetailHeader',
-  data () {
-    return {
-      showAbs: true,
-      opacityStyle: {
-        opacity: 0
-      }
-    }
-  },
-  methods: {
-    handleScroll () {
+  setup() {
+    const showAbs = ref(true)
+    const opacityStyle = reactive({
+      opacity: 0
+    })
+
+    function handleScroll () {
       // 获取滚动距离
       const top = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset
       if (top > 60) {
         // 根据滑动距离来改变header透明度
         let opacity = top / 140
         opacity = opacity > 1 ? 1 : opacity
-        this.opacityStyle = {
-          opacity
-        }
-        this.showAbs = false
+        opacityStyle.opacity = opacity
+        showAbs.value = false
       } else {
-        this.showAbs = true
+        showAbs.value = true
       }
     }
+
+    onMounted(() => {
+      window.addEventListener('scroll', handleScroll)
+    })
+
+    onUnmounted(() => {
+      // 该组件不显示时，解绑全局事件，避免对其他组件造成影响
+      window.removeEventListener('scroll', handleScroll)
+    })
+
+    return { showAbs, opacityStyle }
   },
-  mounted () {
-    window.addEventListener('scroll', this.handleScroll)
-  },
-  destroyed () {
-    // 该组件不显示时，解绑全局事件，避免对其他组件造成影响
-    window.removeEventListener('scroll', this.handleScroll)
-  }
 }
 </script>
 
