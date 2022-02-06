@@ -4,11 +4,11 @@
       <img class="banner-img" :src="bannerImg">
       <div class="banner-info">
         <div class="banner-title">
-          {{this.sightName}}
+          {{sightName}}
         </div>
         <div class="banner-number">
           <span class="iconfont banner-icon">&#xe7ff;</span>
-          {{this.bannerImgs.length}}
+          {{bannerImgs.length}}
         </div>
       </div>
     </div>

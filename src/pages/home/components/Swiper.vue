@@ -11,25 +11,20 @@
 </template>
 
 <script>
+import { computed } from '@vue/runtime-core'
 export default {
   name: 'HomeSwiper',
   props: {
     list: Array
   },
-  data () {
-    return {
-      // swiper轮播图配置项
-      swiperOption: {
-        pagination: '.swiper-pagination',
-        loop: true // 循环播放
-      }
+  setup(props) {
+    const swiperOption = {
+      pagination: '.swiper-pagination',
+      loop: true // 循环播放
     }
+    const showSwiper = computed(() => props.list.length)
+    return { swiperOption, showSwiper }
   },
-  computed: {
-    showSwiper () {
-      return this.list.length
-    }
-  }
 }
 </script>
 

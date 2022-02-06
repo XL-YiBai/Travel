@@ -9,56 +9,46 @@
 </template>
 
 <script>
+// Composition API
 import HomeHeader from './components/Header.vue'
 import HomeSwiper from './components/Swiper.vue'
 import HomeIcons from './components/icons.vue'
 import HomeRecommend from './components/Recommend.vue'
 import HomeWeekend from './components/Weekend.vue'
 import axios from 'axios'
-import { mapState } from 'vuex'
+import { useStore } from 'vuex'
+import {computed, onMounted, ref} from 'vue'
 export default {
   name: 'Home',
   components: {HomeHeader, HomeSwiper, HomeIcons, HomeRecommend, HomeWeekend},
-  data () {
-    return {
-      lastCity: '',
-      swiperList: [],
-      iconList: [],
-      recommendList: [],
-      weekendList: []
-    }
-  },
-  computed: {
-    ...mapState(['city'])
-  },
-  methods: {
-    getHomeInfo () {
-      // 模拟每次重新回到首页如果城市变更，则重新发送ajax获取当前城市的数据
-      axios.get('/api/index.json?city=' + this.city)
-        .then(this.getHomeInfoSucc)
-    },
-    getHomeInfoSucc (res) {
+  setup() {
+		const swiperList = ref([])
+    const iconList = ref([])
+    const recommendList = ref([])
+    const weekendList = ref([])
+		const store = useStore()
+		const city = computed(() => {
+			return store.state.city
+		})
+		function getHomeInfoSucc(res) {
+			
+		}
+		async function getHomeInfo() {
+      let res = await axios.get('/api/index.json?city=' + city)
       res = res.data
-      if (res.ret && res.data) { // 如果返回数据正确，且存在data
-        const data = res.data
-        this.swiperList = data.swiperList
-        this.iconList = data.iconList
-        this.recommendList = data.recommendList
-        this.weekendList = data.weekendList
+      if (res.ret && res.data) {
+        const result = res.data
+        swiperList.value = result.swiperList
+        iconList.value = result.iconList
+        recommendList.value = result.recommendList
+        weekendList.value = result.weekendList
       }
     }
-  },
-  mounted () {
-    this.lastCity = this.city
-    this.getHomeInfo()
-  },
-  activated () {
-    // 模拟每次重新回到首页如果城市变更，则重新发送ajax获取当前城市的数据
-    if (this.lastCity !== this.city) {
-      this.lastCity = this.city
-      this.getHomeInfo()
-    }
-  }
+		onMounted(() => {
+			getHomeInfo()
+		})
+		return {swiperList, iconList, recommendList, weekendList}
+	}
 }
 </script>
 

@@ -5,7 +5,7 @@
         <div class="title border-topbottom">当前城市</div>
         <div class="button-list">
           <div class="button-wrapper">
-            <div class="button">{{this.currentCity}}</div>
+            <div class="button">{{currentCity}}</div>
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default {
     letter () {
       if (this.letter) {
         // 因为导航栏的ref标识是循环加上的，所以直接获取到的是一个数组，在后面再加一个[0]才取到dom元素
-        const element = this.$refs[this.letter][0]
+        const element = this.$refs[this.letter]
         // 使用better-scroll插件自带的接口scrollToElement，可以跳转到该element元素的位置，这样就实现点侧边栏切换城市展示的效果了
         this.scroll.scrollToElement(element)
       }

@@ -1,19 +1,19 @@
-# new-travel
+## 升级至 Vue CLI 4.3 版本后的项目
 
-## Project setup
+### 项目依赖安装
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### 本地开发
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### 打包编译
 ```
 npm run build
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### 自定义配置项
+参考 [配置项文档](https://cli.vuejs.org/config/).

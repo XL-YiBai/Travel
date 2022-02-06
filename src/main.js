@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import  { createApp } from 'vue';
 import App from './App'
 import router from './router'
 // 引入VueAwesomeSwiper轮播图插件库
@@ -9,11 +9,5 @@ import 'styles/border.css'
 import 'styles/iconfont.css'
 import 'swiper/dist/css/swiper.css'
 
-Vue.config.productionTip = false
-Vue.use(VueAwesomeSwiper)
-
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app')
+// 本段代码做了变更
+createApp(App).use(router).use(store).use(VueAwesomeSwiper).mount('#app')

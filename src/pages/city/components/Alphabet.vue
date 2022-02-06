@@ -39,7 +39,7 @@ export default {
   // 因为mounted挂载时，还没有获取到ajax传回的字母数组，所以一开始为空，获取到之后当前组件重新渲染，所以把这个逻辑写在updated钩子里
   updated () {
     // offsetTop它返回当前元素相对于其offsetParent元素的顶部内边距的距离，此时为字母A顶部到顶部蓝色下沿的距离
-    this.startY = this.$refs['A'][0].offsetTop
+    this.startY = this.$refs['A'].offsetTop
   },
   methods: {
     handleLetterClick (e) {

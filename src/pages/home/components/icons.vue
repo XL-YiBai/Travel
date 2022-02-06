@@ -18,23 +18,20 @@
 </template>
 
 <script>
+import { computed } from '@vue/runtime-core'
 export default {
   name: 'HomeIcons',
   props: {
     list: Array
   },
-  data () {
-    return {
-      swiperOption: {
-        autoplay: false // 防止icon图标轮播图自动播放
-      }
+  setup(props) {
+    const swiperOption = {
+      autoplay: false // 防止icon图标轮播图自动播放
     }
-  },
-  computed: {
-    pages () {
+    const pages = computed(() => {
       // 把每一页的icon放入同一个数组，并push进pages数组
       const pages = []
-      this.list.forEach((item, index) => {
+      props.list.forEach((item, index) => {
         const page = Math.floor(index / 8) // 求页数
         if (!pages[page]) { // 如果数组中不存在该页
           pages[page] = []
@@ -42,8 +39,9 @@ export default {
         pages[page].push(item)
       })
       return pages
-    }
-  }
+    })
+    return { swiperOption, pages }
+  },
 }
 </script>
 
